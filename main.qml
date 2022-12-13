@@ -22,7 +22,7 @@ Window {
             id: watched
             text: qsTr("Watched directories:")
             font.pixelSize: 15
-            anchors.left: parent.left
+            anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
         }
         ListView{
@@ -45,13 +45,23 @@ Window {
             id: minus
             text: "-"
             anchors.left: plus.right
+            onClicked: controller.remove_last_folder()
         }
         Text{
             id: event
             text: qsTr("Event:")
             font.pixelSize: 15
-            anchors.right: parent.right
-            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.verticalCenter
+        }
+        ListView{
+            anchors.top: event.bottom
+            width: 100
+            height: parent.height
+            model: controller.event_model
+            delegate: Row{
+                Text { text: modelData }
+            }
         }
     }
 

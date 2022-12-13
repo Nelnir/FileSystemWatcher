@@ -11,7 +11,9 @@ find_package(Qt6 6.2 COMPONENTS Quick REQUIRED)
 
 set(PROJECT_SOURCES
     main.cpp
-    controller.h controller.cpp)
+    controller.h controller.cpp
+    event.h event.cpp
+    mywatcher.h mywatcher.cpp)
 
 qt_add_executable(appFileSystemWatcher
     ${PROJECT_SOURCES}
