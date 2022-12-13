@@ -1,10 +1,13 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
+#include "controller.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    qmlRegisterType<Controller>("FSW.Controller", 1, 0, "Controller");
 
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/FileSystemWatcher/main.qml"_qs);
