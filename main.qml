@@ -58,9 +58,7 @@ Window {
         TableView{
             id: tableView
             width: parent.width
-            height: parent.height
-            pointerNavigationEnabled: false
-            animate: false
+            height: 320
             anchors.top: header.bottom
             columnWidthProvider: function(index){
                 switch(index){
@@ -84,26 +82,26 @@ Window {
                     anchors.centerIn: parent
                 }
             }
+        }
 
-            Button{
-                id: clear
-                text: "Clear"
-                anchors.top: parent.bottom
-                onClicked: eventModel.reset()
-            }
-            Button{
-                id: start
-                text: "Start watching"
-                anchors.top: parent.bottom
-                anchors.left: clear.right
-                onClicked: controller.start_watching()
-            }
-            Button{
-                text: "Stop watching"
-                anchors.top: parent.bottom
-                anchors.left: start.right
-                onClicked: controller.stop_watching()
-            }
+        Button{
+            id: clear
+            text: "Clear"
+            anchors.bottom: parent.bottom
+            onClicked: eventModel.reset()
+        }
+        Button{
+            id: start
+            text: "Start watching"
+            anchors.bottom: parent.bottom
+            anchors.left: clear.right
+            onClicked: controller.start_watching()
+        }
+        Button{
+            text: "Stop watching"
+            anchors.bottom: parent.bottom
+            anchors.left: start.right
+            onClicked: controller.stop_watching()
         }
         HorizontalHeaderView{
             id: header
