@@ -13,7 +13,8 @@ set(PROJECT_SOURCES
     main.cpp
     controller.h controller.cpp
     event.h event.cpp
-    mywatcher.h mywatcher.cpp)
+    mywatcher.h mywatcher.cpp
+    eventtablemodel.h eventtablemodel.cpp)
 
 qt_add_executable(appFileSystemWatcher
     ${PROJECT_SOURCES}

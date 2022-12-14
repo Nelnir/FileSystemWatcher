@@ -6,13 +6,12 @@
 MyWatcher::MyWatcher(QObject *parent)
     : QFileSystemWatcher{parent}
 {
-    QObject::connect(this, &QFileSystemWatcher::directoryChanged, this, &MyWatcher::analyze);
+
 }
 
 
 bool MyWatcher::addPath(const QString& file)
 {
-    qDebug() << "ADDING: " << file;
     init(file);
     return QFileSystemWatcher::addPath(file);
 }
@@ -25,6 +24,16 @@ bool MyWatcher::removePath(const QString& file)
         }
     }
     return QFileSystemWatcher::removePath(file);
+}
+
+void MyWatcher::start_watching()
+{
+    QObject::connect(this, &QFileSystemWatcher::directoryChanged, this, &MyWatcher::analyze);
+}
+
+void MyWatcher::stop_watching()
+{
+    QObject::disconnect(this, &QFileSystemWatcher::directoryChanged, this, &MyWatcher::analyze);
 }
 
 void MyWatcher::analyze(const QString &path)
@@ -44,7 +53,7 @@ void MyWatcher::analyze(const QString &path)
             itr->second.m_to_delete = false;
             if(info.size() != itr->second.m_size){
                 itr->second.m_size = info.size();
-                emit file_edited(file);
+                emit file_edited(file, itr->second.m_type);
             }
         } else{
             new_files.append(std::make_pair(file, info.size()));
@@ -69,12 +78,12 @@ void MyWatcher::analyze(const QString &path)
     }
 
     for(auto& x : new_files){
-        emit file_added(x.first);
         QFileSystemWatcher::addPath(x.first);
         QFileInfo info(x.first);
         FileData fdata;
         fdata.m_size = x.second;
         fdata.m_type = info.isDir() ? FileType::Directory : FileType::File;
+        emit file_added(x.first, fdata.m_type);
         data.emplace(x.first, fdata);
         if(info.isDir()){
             m_data.emplace(x.first, FilesData());
@@ -91,15 +100,17 @@ void MyWatcher::analyze(const QString &path)
             }
             m_data.erase(x.second);
         }
-        emit file_renamed(x.first, x.second);
-        data.emplace(x.first, data.find(x.second)->second);
+       // emit file_renamed(x.first, x.second);
+        auto info = data.find(x.second)->second;
+        emit file_renamed(x.first, info.m_type);
+        data.emplace(x.first, info);
         data.erase(x.second);
         removePath(x.second);
         QFileSystemWatcher::addPath(x.first);
     }
 
     for(auto& x : to_delete){
-        emit file_deleted(x);
+        emit file_deleted(x, QFileInfo(x).isDir() ? FileType::Directory : FileType::File);
         data.erase(x);
         QFileSystemWatcher::removePath(x);
     }
@@ -116,7 +127,6 @@ void MyWatcher::init(const QString &path)
         FileData data;
         data.m_size = info.size();
         data.m_type = info.isDir() ? FileType::Directory : FileType::File;
-        qDebug() << "INIT: " << " " << file << " " << data.m_size;
         if(info.isDir()){
             itr.first->second.emplace(file, data);
             itr = m_data.emplace(file, FilesData());

@@ -3,10 +3,18 @@
 
 Controller::Controller(QObject *parent) : QObject(parent)
 {
-    QObject::connect(&m_watcher, &MyWatcher::file_added, this, [](const QString& file){qDebug()<<"ADDED: " << file;});
-    QObject::connect(&m_watcher, &MyWatcher::file_deleted, this, [](const QString& file){qDebug()<<"DELETED: " << file;});
-    QObject::connect(&m_watcher, &MyWatcher::file_renamed, this, [](const QString& file, const QString& old){qDebug()<<"RENAMED: " << file << " " << old;});
-    QObject::connect(&m_watcher, &MyWatcher::file_edited, this, [](const QString& file){qDebug()<<"EDITED: " << file;});
+    QObject::connect(&m_watcher, &MyWatcher::file_added, this, [&](const QString& file, const FileType& file_type){
+        add_event(EventType::Created, file, file_type);
+    });
+    QObject::connect(&m_watcher, &MyWatcher::file_deleted, this, [&](const QString& file, const FileType& file_type){
+        add_event(EventType::Deleted, file, file_type);
+    });
+    QObject::connect(&m_watcher, &MyWatcher::file_renamed, this, [&](const QString& file, const FileType& file_type){
+        add_event(EventType::Renamed, file, file_type);
+    });
+    QObject::connect(&m_watcher, &MyWatcher::file_edited, this, [&](const QString& file, const FileType& file_type){
+        add_event(EventType::Edited, file, file_type);
+    });
 }
 
 Controller::~Controller()
@@ -22,15 +30,30 @@ void Controller::add_folder(const QString& folder)
     emit model_changed();
 }
 
-void Controller::remove_last_folder()
+void Controller::remove_path(const int& index)
 {
     if(m_model.isEmpty()) return;
-    m_watcher.removePath(m_model.back());
-    m_model.pop_back();
+    m_watcher.removePath(m_model.at(index));
+    m_model.remove(index);
     emit model_changed();
 }
 
-void Controller::add_event()
+void Controller::set_event_model(EventTableModel *model)
 {
+    m_event_model = model;
+}
 
+void Controller::start_watching()
+{
+    m_watcher.start_watching();
+}
+
+void Controller::stop_watching()
+{
+    m_watcher.stop_watching();
+}
+
+void Controller::add_event(const EventType& type, const QString& path, const FileType& ftype)
+{
+    m_event_model->add_event(Event(type, path, ftype));
 }
