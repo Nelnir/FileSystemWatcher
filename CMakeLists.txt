@@ -16,7 +16,7 @@ set(PROJECT_SOURCES
     mywatcher.h mywatcher.cpp
     eventtablemodel.h eventtablemodel.cpp)
 
-qt_add_executable(appFileSystemWatcher
+qt_add_executable(appFileSystemWatcher WIN32
     ${PROJECT_SOURCES}
 )
 
