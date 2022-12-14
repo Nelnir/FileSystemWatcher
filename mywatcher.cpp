@@ -38,6 +38,7 @@ void MyWatcher::stop_watching()
 
 void MyWatcher::analyze(const QString &path)
 {
+    qDebug() << "ANALYZE: " << path;
     auto& data = m_data.find(path)->second;
     for(auto& x : data){
         x.second.m_to_delete = true;
@@ -56,6 +57,7 @@ void MyWatcher::analyze(const QString &path)
                 emit file_edited(file, itr->second.m_type);
             }
         } else{
+            qDebug() << "NEW FILE: " << file;
             new_files.append(std::make_pair(file, info.size()));
         }
     }
@@ -118,7 +120,6 @@ void MyWatcher::analyze(const QString &path)
 
 void MyWatcher::init(const QString &path)
 {
-    auto itr = m_data.emplace(path, FilesData());
     QDirIterator it(path, QDirIterator::Subdirectories);
     while (it.hasNext()){
         QString file = it.next();
@@ -127,9 +128,10 @@ void MyWatcher::init(const QString &path)
         FileData data;
         data.m_size = info.size();
         data.m_type = info.isDir() ? FileType::Directory : FileType::File;
+        auto itr = m_data.emplace(file.sliced(0, file.lastIndexOf('/')), FilesData());
         if(info.isDir()){
             itr.first->second.emplace(file, data);
-            itr = m_data.emplace(file, FilesData());
+            m_data.emplace(file, FilesData());
         } else{
             itr.first->second.emplace(file, data);
         }
