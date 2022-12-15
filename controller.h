@@ -21,6 +21,7 @@ signals:
     void model_changed();
 private:
     void add_event(const EventType& type, const QString& path, const FileType& ftype);
+    void start_download(const QString& file);
 private:
     QStringList m_model;
     MyWatcher m_watcher;

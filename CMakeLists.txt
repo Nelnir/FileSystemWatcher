@@ -7,7 +7,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.2 COMPONENTS Quick REQUIRED)
+find_package(Qt6 6.4 COMPONENTS Quick Network REQUIRED)
+
 
 set(PROJECT_SOURCES
     main.cpp
@@ -29,4 +30,4 @@ qt_add_qml_module(appFileSystemWatcher
 target_compile_definitions(appFileSystemWatcher
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 target_link_libraries(appFileSystemWatcher
-    PRIVATE Qt6::Quick)
+    PRIVATE Qt6::Quick Qt6::Network)
